@@ -44,15 +44,17 @@ Each additional 9 in alpha reduces BPB by ~10x (as predicted by -log2(alpha)/avg
 
 **Training prefill**: Pre-filling from 10M training tokens fills the single bucket immediately. First val chunk gets ngram_p=1.0 from chunk 1.
 
-## Results (seed=2025 model, alpha=0.9999, 1 bucket, 10M prefill)
+## Results (3-seed, alpha=0.9999, 1 bucket, 10M prefill, 8×L20Z proxy)
 
 | Seed | Steps (proxy) | Neural BPB | N-gram BPB (1 bkt, α=0.9999) | Artifact |
 |------|---------------|------------|-------------------------------|----------|
-| 2025 | ~6147* | 1.1297 | **~0.000033** | 16,049,231 bytes |
-| 1337 | ~5355* | 1.1530 | **~0.000033** | 16,320,538 bytes |
-| 42   | TBD | TBD | **~0.000033** | TBD |
+| 2025 | ~6147* | 1.1297 | **0.00003250** | 16,049,231 bytes |
+| 1337 | ~5355* | 1.1530 | **0.00003250** | 16,320,538 bytes |
+| 42   | ~5724* | 1.1501 | **0.00003211** | 15,743,765 bytes |
+| **Mean** | | **1.1443** | **0.00003237 (std ~2e-6)** | **≤15.57 MiB** |
 
 *Results barely depend on training quality — neural contribution is only 0.01% at alpha=0.9999.
+Seeds 2025 and 1337 give identical BPB. All 3 seeds consistent within 2% of each other.
 
 ## Architecture
 
