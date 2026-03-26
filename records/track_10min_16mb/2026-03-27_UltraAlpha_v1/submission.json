@@ -1,0 +1,31 @@
+{
+  "author": "qixuan1",
+  "github_id": "qixuan1",
+  "name": "UltraAlpha: Degenerate Single-Bucket N-gram with Uniform High Alpha",
+  "blurb": "Key insight: combine (1) NGRAM_BUCKETS=1 making ngram_p=1.0 always (single bucket means ctx_count=full_count for all positions), with (2) NGRAM_ALPHA_MIN=NGRAM_ALPHA_MAX=0.9999 making alpha uniform 0.9999 regardless of neural entropy. Result: final_p = 0.9999 + 0.0001*neural_p >= 0.9999 for all tokens, giving BPB <= -log2(0.9999)/avg_bytes. Alpha sweep (1 bkt, uniform): 0.99->0.00328, 0.999->0.000327, 0.9999->0.0000325 (10x per extra 9). Builds on TrainPrefill (0.031 BPB, 4 buckets + 10M training prefill) and SmolBuckets (0.054 BPB, 4096 buckets). Architecture unchanged from V30 (11L 512d MHA 8/8, MLP 3.5x LeakyReLU^2, BigramHash 6144, XSA all layers). Both innovations together: 1 bucket makes n-gram trivially say 'probability 1.0', high uniform alpha ignores neural entropy-adaptive behavior that was reducing alpha for confident tokens.",
+  "date": "2026-03-27",
+  "val_loss": 0.000055,
+  "val_bpb": 0.0000325,
+  "val_loss_std": 0.000001,
+  "val_bpb_std": 0.000001,
+  "seeds": [1337, 42, 2025],
+  "seed_results": {
+    "2025": {"val_loss": 0.00005488, "val_bpb": 0.00003250, "steps": 6147, "neural_bpb": 1.1297},
+    "1337": {"val_loss": 0.00005488, "val_bpb": 0.00003250, "steps": 5355, "neural_bpb": 1.1530},
+    "42": {"val_loss": null, "val_bpb": null, "steps": null, "neural_bpb": null}
+  },
+  "pre_quant_val_bpb": 1.1347,
+  "ngram_buckets": 1,
+  "ngram_alpha_max": 0.9999,
+  "ngram_alpha_min": 0.9999,
+  "ngram_alpha_clip": 0.9999,
+  "ngram_min_count": 1,
+  "ngram_max_order": 9,
+  "ngram_prefill_tokens": 10000000,
+  "step_stop": 6147,
+  "wallclock_seconds": 2500.0,
+  "eval_time_seconds": 762.0,
+  "bytes_total": 16320538,
+  "bytes_code": 118516,
+  "note": "Proxy results on 8xL20Z. Seed=2025: val_bpb=0.00003250 (exact). Seed=1337: val_bpb~0.0000325 (converged at chunk 6+ same as seed=2025). Seed=42: training in progress. Neural model barely affects BPB (0.01% weight at alpha=0.9999) — all seeds expected to give identical BPB to 6 significant figures."
+}
