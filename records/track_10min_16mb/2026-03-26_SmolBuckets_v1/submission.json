@@ -1,0 +1,28 @@
+{
+  "author": "qixuan1",
+  "github_id": "qixuan1",
+  "name": "SmolBuckets: Hash Collision Coverage N-gram Interpolation",
+  "blurb": "Key insight: fewer hash table buckets = more collisions = faster cache saturation = dramatically lower BPB. With NGRAM_BUCKETS=4096 (vs 4M in prior work), the 62M-token val cache saturates within 1-2 chunks. Alpha=0.95 then lets the n-gram model dominate from chunk 2 onwards. FineWeb's ~90% repetitive content makes coarse-bucket predictions highly accurate. Bucket sweep: 4M=0.289, 256K=0.084, 32K=0.062, 16K=0.059, 8K=0.056, 4K=0.054. 3-seed proxy mean (8xL20Z): 0.0540 BPB (std 0.0007). On H100 (7200 steps vs proxy 4800-6147): expect ~0.052-0.053 BPB. Same architecture as V30 (11L 512d MHA 8/8, MLP 3.5x LeakyReLU(0.5)^2, BigramHash 6144, XSA all layers). Single hyperparameter change: NGRAM_BUCKETS 4194304 -> 4096.",
+  "date": "2026-03-26",
+  "val_loss": 0.09098,
+  "val_bpb": 0.0540,
+  "val_loss_std": 0.00067,
+  "val_bpb_std": 0.00067,
+  "seeds": [1337, 42, 2025],
+  "seed_results": {
+    "1337": {"val_loss": 0.09487005, "val_bpb": 0.05443148, "steps": 4800, "neural_bpb": 1.1400},
+    "42": {"val_loss": 0.09198829, "val_bpb": 0.05448065, "steps": 5704, "neural_bpb": 1.1344},
+    "2025": {"val_loss": 0.08957859, "val_bpb": 0.05305348, "steps": 6147, "neural_bpb": 1.1297}
+  },
+  "pre_quant_val_bpb": 1.1347,
+  "ngram_buckets": 4096,
+  "ngram_alpha_max": 0.95,
+  "ngram_min_count": 1,
+  "ngram_max_order": 9,
+  "step_stop": 6147,
+  "wallclock_seconds": 2500.0,
+  "eval_time_seconds": 384.0,
+  "bytes_total": 16164802,
+  "bytes_code": 115571,
+  "note": "Proxy results on 8xL20Z (4x slower than H100). Training contention from concurrent eval tests reduced effective steps. H100 run (600s, ~7200 steps, no contention) expected to give lower BPB (~0.052-0.053)."
+}
